@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#1F3A5F" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Nihongo" />
+<title>Nihongo Trainer</title>
+<style>
+:root{
+  --paper:#F3EEE1;--paper-2:#EAE3D2;--sumi:#211E1A;--sumi-soft:#5E574B;
+  --ai:#1F3A5F;--ai-2:#2E5486;--matcha:#5F7346;--bengara:#A8452F;
+  --guide:#CFC6AE;--line:#D9D1BE;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Songti SC","MS Mincho",serif;
+  --sans:"Helvetica Neue","Hiragino Kaku Gothic ProN",Arial,system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:var(--sans);color:var(--sumi);background:var(--paper);
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:26px 26px;background-position:center;-webkit-tap-highlight-color:transparent;}
+.nt-root{max-width:560px;margin:0 auto;padding:20px 18px calc(14px + env(safe-area-inset-bottom));min-height:100%;border-left:1px solid var(--line);border-right:1px solid var(--line);}
+.nt-head{display:flex;gap:12px;align-items:center;}
+.nt-logo{font-family:var(--mincho);font-size:22px;color:var(--ai);line-height:1;border:2px solid var(--ai);padding:8px;border-radius:4px;background:var(--paper);white-space:nowrap;}
+.nt-head h1{font-family:var(--mincho);font-size:21px;letter-spacing:.5px;}
+.nt-head p{margin-top:2px;font-size:12.5px;color:var(--sumi-soft);}
+.nt-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-top:14px;}
+.nt-tabs button{border:1px solid var(--line);background:var(--paper);font:600 12.5px var(--sans);color:var(--sumi-soft);padding:7px 12px;border-radius:8px;cursor:pointer;}
+.nt-tabs button.on{background:var(--ai);border-color:var(--ai);color:#fff;}
+.nt-controls{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:14px 0 8px;flex-wrap:wrap;}
+.nt-chips{display:flex;gap:6px;flex-wrap:wrap;}
+.nt-chip{border:1px solid var(--line);background:var(--paper);color:var(--sumi-soft);font:600 12.5px var(--sans);padding:6px 12px;border-radius:20px;cursor:pointer;}
+.nt-chip.on{background:var(--ai);border-color:var(--ai);color:#fff;}
+.nt-hint-inline{font-size:12.5px;color:var(--sumi-soft);font-weight:600;}
+.nt-meter{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--sumi-soft);}
+.nt-meter-track{width:80px;height:6px;background:var(--paper-2);border-radius:4px;overflow:hidden;}
+.nt-meter-fill{height:100%;background:var(--matcha);border-radius:4px;transition:width .4s;}
+.nt-main{padding-top:12px;}
+.nt-drill{display:flex;flex-direction:column;align-items:center;}
+.nt-cell{position:relative;width:230px;height:180px;background:var(--paper);border:2px solid var(--ai);border-radius:6px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 rgba(31,58,95,.12);transition:.2s;padding:8px;}
+.nt-guide-v{position:absolute;width:1px;height:100%;left:50%;background-image:linear-gradient(180deg,var(--guide) 50%,transparent 0);background-size:1px 8px;}
+.nt-guide-h{position:absolute;height:1px;width:100%;top:50%;background-image:linear-gradient(90deg,var(--guide) 50%,transparent 0);background-size:8px 1px;}
+.nt-jp{display:flex;flex-direction:column;align-items:center;gap:6px;animation:settle .35s ease;text-align:center;}
+.nt-kanji{font-family:var(--mincho);line-height:1.1;color:var(--sumi);}
+.nt-read{font-family:var(--mincho);font-size:20px;color:var(--sumi-soft);}
+.nt-prompt{font-family:var(--sans);font-size:26px;font-weight:600;color:var(--sumi);text-align:center;padding:0 12px;animation:settle .35s ease;line-height:1.3;}
+@keyframes settle{from{opacity:0;transform:translateY(-6px) scale(.97);}to{opacity:1;transform:none;}}
+.nt-cell.nt-right{border-color:var(--matcha);box-shadow:0 4px 0 rgba(95,115,70,.2);background:#EEF1E6;}
+.nt-cell.nt-wrong{border-color:var(--bengara);box-shadow:0 4px 0 rgba(168,69,47,.2);animation:shake .3s;}
+@keyframes shake{10%,90%{transform:translateX(-2px);}30%,70%{transform:translateX(4px);}50%{transform:translateX(-4px);}}
+.nt-sentence{font-family:var(--mincho);font-size:29px;color:var(--sumi);background:var(--paper);border:2px solid var(--ai);border-radius:8px;padding:22px 18px;text-align:center;line-height:1.5;box-shadow:0 4px 0 rgba(31,58,95,.12);width:100%;max-width:420px;}
+.nt-sentence.nt-right{border-color:var(--matcha);background:#EEF1E6;}
+.nt-sentence.nt-wrong{border-color:var(--bengara);background:#F6E9E5;}
+.nt-blank{display:inline-block;min-width:34px;color:var(--bengara);border-bottom:2px solid var(--bengara);margin:0 2px;font-weight:700;}
+.nt-blank.filled{color:var(--matcha);border-color:var(--matcha);}
+.nt-trans{font-size:14px;color:var(--sumi-soft);margin:12px 0 4px;text-align:center;font-style:italic;}
+.nt-particles{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px;max-width:360px;}
+.nt-pbtn{font-family:var(--mincho);font-size:26px;width:56px;height:56px;border:1px solid var(--line);background:var(--paper);color:var(--sumi);border-radius:10px;cursor:pointer;box-shadow:0 2px 0 rgba(31,58,95,.1);}
+.nt-pbtn:active{transform:translateY(1px);box-shadow:none;}
+.nt-answer{margin-top:18px;width:100%;max-width:320px;text-align:center;min-height:104px;}
+.nt-input{width:100%;font:600 20px var(--sans);text-align:center;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--sumi);outline:none;}
+.nt-input:focus{border-color:var(--ai);box-shadow:0 0 0 3px rgba(31,58,95,.12);}
+.nt-btns{display:flex;gap:8px;margin-top:10px;}
+.nt-primary{flex:1;border:0;background:var(--ai);color:#fff;font:600 15px var(--sans);padding:11px;border-radius:8px;cursor:pointer;}
+.nt-ghost{border:1px solid var(--line);background:transparent;color:var(--sumi-soft);font:600 14px var(--sans);padding:11px 14px;border-radius:8px;cursor:pointer;}
+.nt-fb{font-family:var(--mincho);font-size:21px;margin:10px 0 6px;}
+.nt-fb-ok{color:var(--matcha);}
+.nt-fb-no{color:var(--bengara);}
+.nt-fb-no b{border-bottom:2px solid var(--bengara);}
+.nt-note{font-size:13.5px;color:var(--sumi-soft);margin:4px auto 12px;max-width:340px;line-height:1.5;}
+.nt-fb-wrap{text-align:center;margin-top:14px;}
+.nt-fb-wrap .nt-primary{max-width:200px;margin:0 auto;}
+.nt-stats{display:flex;gap:8px;margin-top:22px;width:100%;max-width:360px;}
+.nt-stat{flex:1;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:9px 4px;text-align:center;}
+.nt-stat b{display:block;font-family:var(--mincho);font-size:20px;color:var(--ai);}
+.nt-stat span{font-size:10.5px;color:var(--sumi-soft);text-transform:uppercase;letter-spacing:.5px;}
+.nt-modal{position:fixed;inset:0;background:rgba(33,30,26,.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50;}
+.nt-modal-box{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:20px;max-width:440px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.25);}
+.nt-modal-box h3{font-family:var(--mincho);margin-bottom:6px;font-size:19px;}
+.nt-modal-box p{margin-bottom:12px;font-size:13px;color:var(--sumi-soft);line-height:1.45;}
+.nt-export-area{width:100%;height:200px;font:12.5px/1.5 ui-monospace,Menlo,monospace;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--paper-2);color:var(--sumi);resize:vertical;}
+.nt-modal-btns{display:flex;gap:8px;margin-top:12px;}
+.nt-modal-btns .nt-primary{flex:1;}
+.nt-foot{display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:12px;border-top:1px solid var(--line);font-size:11.5px;}
+.nt-export-btn{border:0;background:transparent;color:var(--ai);font:600 11.5px var(--sans);cursor:pointer;text-decoration:underline;}
+.nt-reset{border:0;background:transparent;color:var(--bengara);font:600 11.5px var(--sans);cursor:pointer;text-decoration:underline;}
+@media (max-width:420px){.nt-cell{width:200px;height:165px;}.nt-sentence{font-size:24px;}.nt-pbtn{width:50px;height:50px;font-size:23px;}.nt-prompt{font-size:22px;}}
+@media (prefers-reduced-motion:reduce){.nt-jp,.nt-prompt,.nt-cell.nt-wrong{animation:none;}}
+</style>
+</head>
+<body>
+<div class="nt-root">
+  <header class="nt-head">
+    <span class="nt-logo">日本語</span>
+    <div><h1>Nihongo Trainer</h1><p>Refuerza lo básico para volar en clase.</p></div>
+  </header>
+  <nav class="nt-tabs" id="tabs"></nav>
+  <div class="nt-controls">
+    <div id="ctl-left"></div>
+    <div class="nt-meter"><div class="nt-meter-track"><div class="nt-meter-fill" id="meter"></div></div><span id="meter-label"></span></div>
+  </div>
+  <main class="nt-main" id="main"></main>
+  <footer class="nt-foot">
+    <button class="nt-export-btn" id="export-btn">Exportar para Claude</button>
+    <button class="nt-reset" id="reset-btn">Reiniciar progreso</button>
+  </footer>
+</div>
+<div id="modal-root"></div>
+<script>
+(function(){
+"use strict";
+
+var PRONOUNS=[
+ {id:"watashi",kanji:"私",kana:"わたし",romaji:"watashi",es:["yo"],esPrompt:"yo (neutral)",note:"El “yo” estándar. Vale para todos."},
+ {id:"boku",kanji:"僕",kana:"ぼく",romaji:"boku",es:["yo"],esPrompt:"yo (masc. informal)",note:"“Yo” masculino y suave. Sobre todo chicos/hombres."},
+ {id:"ore",kanji:"俺",kana:"おれ",romaji:"ore",es:["yo"],esPrompt:"yo (masc. muy informal)",note:"“Yo” masculino y brusco. Entre amigos."},
+ {id:"anata",kanji:"あなた",kana:"あなた",romaji:"anata",es:["tu","usted"],esPrompt:"tú / usted",note:"Se usa poco: mejor nombre + さん. Entre parejas = “cariño”."},
+ {id:"kimi",kanji:"君",kana:"きみ",romaji:"kimi",es:["tu"],esPrompt:"tú (informal)",note:"“Tú” informal, de cercano o de superior a inferior."},
+ {id:"kare",kanji:"彼",kana:"かれ",romaji:"kare",es:["el"],esPrompt:"él",note:"“Él”. Según contexto también “novio”."},
+ {id:"kanojo",kanji:"彼女",kana:"かのじょ",romaji:"kanojo",es:["ella"],esPrompt:"ella",note:"Truco: 彼 (él) + 女 (mujer) = ella. También “novia”."},
+ {id:"watashitachi",kanji:"私たち",kana:"わたしたち",romaji:"watashitachi",es:["nosotros","nosotras"],esPrompt:"nosotros",note:"私 + たち (pluraliza personas)."},
+ {id:"karera",kanji:"彼ら",kana:"かれら",romaji:"karera",es:["ellos","ellas"],esPrompt:"ellos / ellas",note:"彼 + ら. Cubre ellos, ellas o grupo mixto: no marca género en plural."},
+ {id:"anatatachi",kanji:"あなたたち",kana:"あなたたち",romaji:"anatatachi",es:["vosotros","vosotras","ustedes"],esPrompt:"vosotros / ustedes",note:"あなた + たち. Común: みなさん (todos)."},
+ {id:"kanojotachi",kanji:"彼女たち",kana:"かのじょたち",romaji:"kanojotachi",es:["ellas"],esPrompt:"ellas (solo mujeres)",note:"彼女 + たち. Solo si son todas mujeres; si no, 彼ら."}
+];
+var PARTICLE_OPTIONS=["は","が","を","に","へ","で","と","も","の"];
+var SENTENCES=[
+ {id:"p1",pre:"わたし",post:"がくせいです。",ans:["は"],es:"Yo soy estudiante.",exp:"は marca el TEMA: “en cuanto a mí…”."},
+ {id:"p2",pre:"ほん",post:"よみます。",ans:["を"],es:"Leo un libro.",exp:"を marca el OBJETO directo."},
+ {id:"p3",pre:"コーヒー",post:"のみます。",ans:["を"],es:"Bebo café.",exp:"を: objeto directo de のむ."},
+ {id:"p4",pre:"ねこ",post:"すきです。",ans:["が"],es:"Me gustan los gatos.",exp:"Con すき (gustar), lo que gusta lleva が."},
+ {id:"p5",pre:"おかね",post:"あります。",ans:["が"],es:"Tengo dinero.",exp:"Con ある (haber), el sujeto lleva が."},
+ {id:"p6",pre:"しちじ",post:"おきます。",ans:["に"],es:"Me levanto a las 7.",exp:"に marca el momento EXACTO."},
+ {id:"p7",pre:"がっこう",post:"べんきょうします。",ans:["で"],es:"Estudio en la escuela.",exp:"で marca el LUGAR de la acción."},
+ {id:"p8",pre:"でんしゃ",post:"いきます。",ans:["で"],es:"Voy en tren.",exp:"で también marca el MEDIO."},
+ {id:"p9",pre:"にほん",post:"いきます。",ans:["に","へ"],es:"Voy a Japón.",exp:"に y へ marcan DESTINO. Las dos valen."},
+ {id:"p10",pre:"わたし",post:"なまえはハルです。",ans:["の"],es:"Mi nombre es Haru.",exp:"の une nombres (posesivo)."},
+ {id:"p11",pre:"これ",post:"なんですか。",ans:["は"],es:"¿Qué es esto?",exp:"は presenta el tema."},
+ {id:"p12",pre:"トイレ",post:"どこですか。",ans:["は"],es:"¿Dónde está el baño?",exp:"は marca el tema."},
+ {id:"p13",pre:"ともだち",post:"はなします。",ans:["と"],es:"Hablo con un amigo.",exp:"と = “con” (compañía)."},
+ {id:"p14",pre:"にほんご",post:"はなします。",ans:["を"],es:"Hablo japonés.",exp:"を: objeto directo de はなす."},
+ {id:"p15",pre:"テレビ",post:"みます。",ans:["を"],es:"Veo la tele.",exp:"を: objeto directo de みる."},
+ {id:"p16",pre:"としょかん",post:"べんきょうします。",ans:["で"],es:"Estudio en la biblioteca.",exp:"で: lugar de la acción."},
+ {id:"p17",pre:"きょうしつ",post:"います。",ans:["に"],es:"Estoy en el aula.",exp:"Con いる, el lugar lleva に."},
+ {id:"p18",pre:"みず",post:"のみたいです。",ans:["が","を"],es:"Quiero beber agua.",exp:"Con ～たい, el objeto admite が o を."},
+ {id:"p19",pre:"うち",post:"かえります。",ans:["に","へ"],es:"Vuelvo a casa.",exp:"に/へ: destino de かえる."},
+ {id:"p20",pre:"にほんご",post:"せんせいです。",ans:["の"],es:"Es profesor de japonés.",exp:"の une sustantivos."},
+ {id:"p21",pre:"パン",post:"たべます。",ans:["を"],es:"Como pan.",exp:"を: objeto directo de たべる."},
+ {id:"p22",pre:"えいご",post:"わかります。",ans:["が"],es:"Entiendo inglés.",exp:"Con わかる, lo entendido lleva が."},
+ {id:"p23",pre:"レストラン",post:"たべます。",ans:["で"],es:"Como en el restaurante.",exp:"ACCIÓN (comer) en un lugar → で."},
+ {id:"p24",pre:"レストラン",post:"います。",ans:["に"],es:"Estoy en el restaurante.",exp:"PRESENCIA (いる) → に. Mismo sitio que antes, pero sin acción."},
+ {id:"p25",pre:"こうえん",post:"あそびます。",ans:["で"],es:"Juego en el parque.",exp:"ACCIÓN (jugar) → で."},
+ {id:"p26",pre:"へや",post:"います。",ans:["に"],es:"Estoy en la habitación.",exp:"PRESENCIA (いる) → に."},
+ {id:"p27",pre:"かいしゃ",post:"はたらきます。",ans:["で"],es:"Trabajo en la empresa.",exp:"ACCIÓN (trabajar) → で."},
+ {id:"p28",pre:"つくえのうえ",post:"あります。",ans:["に"],es:"Está sobre la mesa.",exp:"EXISTENCIA (ある) → に."}
+];
+var MONTHS=[
+ {id:"m1",kana:"いちがつ",romaji:"ichigatsu",es:["enero"],esPrompt:"enero · 1月",note:""},
+ {id:"m2",kana:"にがつ",romaji:"nigatsu",es:["febrero"],esPrompt:"febrero · 2月",note:""},
+ {id:"m3",kana:"さんがつ",romaji:"sangatsu",es:["marzo"],esPrompt:"marzo · 3月",note:""},
+ {id:"m4",kana:"しがつ",romaji:"shigatsu",es:["abril"],esPrompt:"abril · 4月",note:"⚠ Irregular: し, nunca よん."},
+ {id:"m5",kana:"ごがつ",romaji:"gogatsu",es:["mayo"],esPrompt:"mayo · 5月",note:""},
+ {id:"m6",kana:"ろくがつ",romaji:"rokugatsu",es:["junio"],esPrompt:"junio · 6月",note:""},
+ {id:"m7",kana:"しちがつ",romaji:"shichigatsu",es:["julio"],esPrompt:"julio · 7月",note:"⚠ しち, no なな."},
+ {id:"m8",kana:"はちがつ",romaji:"hachigatsu",es:["agosto"],esPrompt:"agosto · 8月",note:""},
+ {id:"m9",kana:"くがつ",romaji:"kugatsu",es:["septiembre","setiembre"],esPrompt:"septiembre · 9月",note:"⚠ Irregular: く, nunca きゅう."},
+ {id:"m10",kana:"じゅうがつ",romaji:"juugatsu",alt:["jugatsu"],es:["octubre"],esPrompt:"octubre · 10月",note:""},
+ {id:"m11",kana:"じゅういちがつ",romaji:"juuichigatsu",alt:["juichigatsu"],es:["noviembre"],esPrompt:"noviembre · 11月",note:""},
+ {id:"m12",kana:"じゅうにがつ",romaji:"juunigatsu",alt:["junigatsu"],es:["diciembre"],esPrompt:"diciembre · 12月",note:""}
+];
+var DAYS=[
+ {id:"d1",kana:"ついたち",romaji:"tsuitachi",es:["1","dia 1","uno"],esPrompt:"día 1 · 1日",note:"⚠ Totalmente irregular: “el primero”."},
+ {id:"d2",kana:"ふつか",romaji:"futsuka",es:["2","dia 2","dos"],esPrompt:"día 2 · 2日",note:"⚠ Lectura nativa."},
+ {id:"d3",kana:"みっか",romaji:"mikka",es:["3","dia 3","tres"],esPrompt:"día 3 · 3日",note:"⚠ Lectura nativa (con っ)."},
+ {id:"d4",kana:"よっか",romaji:"yokka",es:["4","dia 4","cuatro"],esPrompt:"día 4 · 4日",note:"⚠ よっか. Reaparece en 14 y 24."},
+ {id:"d5",kana:"いつか",romaji:"itsuka",es:["5","dia 5","cinco"],esPrompt:"día 5 · 5日",note:"⚠ Lectura nativa."},
+ {id:"d6",kana:"むいか",romaji:"muika",es:["6","dia 6","seis"],esPrompt:"día 6 · 6日",note:"⚠ Lectura nativa."},
+ {id:"d7",kana:"なのか",romaji:"nanoka",es:["7","dia 7","siete"],esPrompt:"día 7 · 7日",note:"⚠ Lectura nativa."},
+ {id:"d8",kana:"ようか",romaji:"youka",alt:["yoka","yōka"],es:["8","dia 8","ocho"],esPrompt:"día 8 · 8日",note:"⚠ Ojo: suena casi como よっか (4), pero es よ-う-か."},
+ {id:"d9",kana:"ここのか",romaji:"kokonoka",es:["9","dia 9","nueve"],esPrompt:"día 9 · 9日",note:"⚠ Lectura nativa."},
+ {id:"d10",kana:"とおか",romaji:"tooka",alt:["toka","tōka"],es:["10","dia 10","diez"],esPrompt:"día 10 · 10日",note:"⚠ Lectura nativa."},
+ {id:"d11",kana:"じゅういちにち",romaji:"juuichinichi",alt:["juichinichi"],es:["11","dia 11"],esPrompt:"día 11 · 11日",note:"Regular desde aquí: nº + にち."},
+ {id:"d12",kana:"じゅうににち",romaji:"juuninichi",alt:["juninichi"],es:["12","dia 12"],esPrompt:"día 12 · 12日",note:""},
+ {id:"d13",kana:"じゅうさんにち",romaji:"juusannichi",alt:["jusannichi"],es:["13","dia 13"],esPrompt:"día 13 · 13日",note:""},
+ {id:"d14",kana:"じゅうよっか",romaji:"juuyokka",alt:["juyokka"],es:["14","dia 14"],esPrompt:"día 14 · 14日",note:"⚠ Irregular: usa よっか, no にち."},
+ {id:"d15",kana:"じゅうごにち",romaji:"juugonichi",alt:["jugonichi"],es:["15","dia 15"],esPrompt:"día 15 · 15日",note:""},
+ {id:"d16",kana:"じゅうろくにち",romaji:"juurokunichi",alt:["jurokunichi"],es:["16","dia 16"],esPrompt:"día 16 · 16日",note:""},
+ {id:"d17",kana:"じゅうしちにち",romaji:"juushichinichi",alt:["jushichinichi"],es:["17","dia 17"],esPrompt:"día 17 · 17日",note:"しち (17), no なな."},
+ {id:"d18",kana:"じゅうはちにち",romaji:"juuhachinichi",alt:["juhachinichi"],es:["18","dia 18"],esPrompt:"día 18 · 18日",note:""},
+ {id:"d19",kana:"じゅうくにち",romaji:"juukunichi",alt:["jukunichi"],es:["19","dia 19"],esPrompt:"día 19 · 19日",note:"く (19), no きゅう."},
+ {id:"d20",kana:"はつか",romaji:"hatsuka",es:["20","dia 20","veinte"],esPrompt:"día 20 · 20日",note:"⚠ Totalmente irregular y único: はつか."},
+ {id:"d21",kana:"にじゅういちにち",romaji:"nijuuichinichi",alt:["nijuichinichi"],es:["21","dia 21"],esPrompt:"día 21 · 21日",note:""},
+ {id:"d22",kana:"にじゅうににち",romaji:"nijuuninichi",alt:["nijuninichi"],es:["22","dia 22"],esPrompt:"día 22 · 22日",note:""},
+ {id:"d23",kana:"にじゅうさんにち",romaji:"nijuusannichi",alt:["nijusannichi"],es:["23","dia 23"],esPrompt:"día 23 · 23日",note:""},
+ {id:"d24",kana:"にじゅうよっか",romaji:"nijuuyokka",alt:["nijuyokka"],es:["24","dia 24"],esPrompt:"día 24 · 24日",note:"⚠ Irregular: usa よっか."},
+ {id:"d25",kana:"にじゅうごにち",romaji:"nijuugonichi",alt:["nijugonichi"],es:["25","dia 25"],esPrompt:"día 25 · 25日",note:""},
+ {id:"d26",kana:"にじゅうろくにち",romaji:"nijuurokunichi",alt:["nijurokunichi"],es:["26","dia 26"],esPrompt:"día 26 · 26日",note:""},
+ {id:"d27",kana:"にじゅうしちにち",romaji:"nijuushichinichi",alt:["nijushichinichi"],es:["27","dia 27"],esPrompt:"día 27 · 27日",note:""},
+ {id:"d28",kana:"にじゅうはちにち",romaji:"nijuuhachinichi",alt:["nijuhachinichi"],es:["28","dia 28"],esPrompt:"día 28 · 28日",note:""},
+ {id:"d29",kana:"にじゅうくにち",romaji:"nijuukunichi",alt:["nijukunichi"],es:["29","dia 29"],esPrompt:"día 29 · 29日",note:""},
+ {id:"d30",kana:"さんじゅうにち",romaji:"sanjuunichi",alt:["sanjunichi"],es:["30","dia 30"],esPrompt:"día 30 · 30日",note:""},
+ {id:"d31",kana:"さんじゅういちにち",romaji:"sanjuuichinichi",alt:["sanjuichinichi"],es:["31","dia 31"],esPrompt:"día 31 · 31日",note:""}
+];
+var HOURS=[
+ {id:"h1",kana:"いちじ",romaji:"ichiji",es:["1","la 1","una","1:00"],esPrompt:"la 1:00 · 1時",note:""},
+ {id:"h2",kana:"にじ",romaji:"niji",es:["2","las 2","2:00"],esPrompt:"las 2:00 · 2時",note:""},
+ {id:"h3",kana:"さんじ",romaji:"sanji",es:["3","las 3","3:00"],esPrompt:"las 3:00 · 3時",note:""},
+ {id:"h4",kana:"よじ",romaji:"yoji",es:["4","las 4","4:00"],esPrompt:"las 4:00 · 4時",note:"⚠ Irregular: よじ, no よんじ. El fallo nº1 de todos."},
+ {id:"h5",kana:"ごじ",romaji:"goji",es:["5","las 5","5:00"],esPrompt:"las 5:00 · 5時",note:""},
+ {id:"h6",kana:"ろくじ",romaji:"rokuji",es:["6","las 6","6:00"],esPrompt:"las 6:00 · 6時",note:""},
+ {id:"h7",kana:"しちじ",romaji:"shichiji",es:["7","las 7","7:00"],esPrompt:"las 7:00 · 7時",note:"しち, no なな."},
+ {id:"h8",kana:"はちじ",romaji:"hachiji",es:["8","las 8","8:00"],esPrompt:"las 8:00 · 8時",note:""},
+ {id:"h9",kana:"くじ",romaji:"kuji",es:["9","las 9","9:00"],esPrompt:"las 9:00 · 9時",note:"⚠ Irregular: くじ, no きゅうじ."},
+ {id:"h10",kana:"じゅうじ",romaji:"juuji",alt:["juji"],es:["10","las 10","10:00"],esPrompt:"las 10:00 · 10時",note:""},
+ {id:"h11",kana:"じゅういちじ",romaji:"juuichiji",alt:["juichiji"],es:["11","las 11","11:00"],esPrompt:"las 11:00 · 11時",note:""},
+ {id:"h12",kana:"じゅうにじ",romaji:"juuniji",alt:["juniji"],es:["12","las 12","12:00"],esPrompt:"las 12:00 · 12時",note:""}
+];
+// para meses/dias/horas, el "hero" es la propia lectura
+MONTHS.concat(DAYS,HOURS).forEach(function(c){c.kanji=c.kana;});
+
+var DECKS={
+ vocab:{label:"Pronombres",type:"cards",data:PRONOUNS},
+ particles:{label:"Partículas",type:"particles",data:SENTENCES},
+ months:{label:"Meses",type:"cards",data:MONTHS},
+ days:{label:"Días",type:"cards",data:DAYS},
+ hours:{label:"Horas",type:"cards",data:HOURS}
+};
+var ORDER=["vocab","particles","months","days","hours"];
+var KEY="nihongo-trainer-v1";
+var reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function load(){try{var r=localStorage.getItem(KEY);var p=r?JSON.parse(r):{};return{vocab:p.vocab||{},particles:p.particles||{},months:p.months||{},days:p.days||{},hours:p.hours||{}};}catch(e){return{vocab:{},particles:{},months:{},days:{},hours:{}};}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state.boxes));}catch(e){}}
+function stripAcc(s){return (s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"");}
+function normEs(s){return stripAcc((s||"").trim().toLowerCase()).replace(/[.!¿?,]/g,"");}
+function normJp(s){return (s||"").trim().toLowerCase().replace(/\s+/g,"");}
+function heroFont(s){var n=(s||"").length;return n<=2?76:n===3?58:n===4?48:n===5?40:n<=6?34:28;}
+
+var state={mode:"vocab",dir:"jp_es",boxes:load(),session:{seen:0,ok:0,streak:0,best:0},current:null,qDir:"jp_es",status:"idle",picked:null,last:null};
+
+function deck(){return DECKS[state.mode].data;}
+function isCards(){return DECKS[state.mode].type==="cards";}
+function mastered(){var b=state.boxes[state.mode]||{};return deck().filter(function(c){return (b[c.id]&&b[c.id].box>=4);}).length;}
+
+function pickNext(){
+ var b=state.boxes[state.mode]||{},d=deck();
+ var w=d.map(function(c){var st=b[c.id],box=st?st.box:0,weight=Math.pow(6-box,2)+1;if(!st)weight+=8;if(c.id===state.last)weight=0.01;return{c:c,w:weight};});
+ var total=w.reduce(function(s,x){return s+x.w;},0),r=Math.random()*total,chosen=w[w.length-1].c;
+ for(var i=0;i<w.length;i++){r-=w[i].w;if(r<=0){chosen=w[i].c;break;}}
+ state.current=chosen;
+ if(isCards())state.qDir=state.dir==="mix"?(Math.random()<0.5?"jp_es":"es_jp"):state.dir;
+}
+function grade(correct){
+ var b=state.boxes[state.mode]||{},st=b[state.current.id]||{box:0,seen:0,ok:0};
+ b[state.current.id]={box:correct?Math.min(5,st.box+1):0,seen:st.seen+1,ok:st.ok+(correct?1:0)};
+ state.boxes[state.mode]=b;save();
+ var s=state.session,streak=correct?s.streak+1:0;
+ state.session={seen:s.seen+1,ok:s.ok+(correct?1:0),streak:streak,best:Math.max(s.best,streak)};
+}
+function checkVocab(){
+ if(!state.current||state.status!=="idle")return;
+ var el=document.getElementById("nt-input"),val=el?el.value:"",c=state.current,correct;
+ if(state.qDir==="jp_es")correct=c.es.map(normEs).indexOf(normEs(val))>-1;
+ else{var acc=[normJp(c.romaji)].concat((c.alt||[]).map(normJp));correct=acc.indexOf(normJp(val))>-1||val.trim()===c.kana;}
+ state.last=c.id;grade(correct);state.status=correct?"right":"wrong";render();
+ if(correct)setTimeout(next,reduced?250:750);
+}
+function chooseParticle(p){
+ if(!state.current||state.status!=="idle")return;
+ var correct=state.current.ans.indexOf(p)>-1;state.picked=p;state.last=state.current.id;grade(correct);
+ state.status=correct?"right":"wrong";render();if(correct)setTimeout(next,reduced?400:1100);
+}
+function revealVocab(){if(!state.current||state.status!=="idle")return;state.last=state.current.id;grade(false);state.status="wrong";render();}
+function next(){state.status="idle";state.picked=null;pickNext();render();}
+
+function chrome(){
+ var tabs=document.getElementById("tabs");tabs.innerHTML="";
+ ORDER.forEach(function(k){var b=document.createElement("button");b.textContent=DECKS[k].label;b.className=state.mode===k?"on":"";b.onclick=function(){state.mode=k;state.status=null;state.session={seen:0,ok:0,streak:0,best:0};state.status="idle";pickNext();render();};tabs.appendChild(b);});
+ var left=document.getElementById("ctl-left");left.innerHTML="";
+ if(isCards()){
+  var wrap=document.createElement("div");wrap.className="nt-chips";
+  [["jp_es","日→ES"],["es_jp","ES→日"],["mix","Mixto"]].forEach(function(o){var c=document.createElement("button");c.className="nt-chip"+(state.dir===o[0]?" on":"");c.textContent=o[1];c.onclick=function(){state.dir=o[0];state.status="idle";pickNext();render();};wrap.appendChild(c);});
+  left.appendChild(wrap);
+ } else { left.innerHTML='<div class="nt-hint-inline">Elige la partícula correcta</div>'; }
+ var d=deck(),m=mastered(),pct=d.length?Math.round(m/d.length*100):0;
+ document.getElementById("meter").style.width=pct+"%";
+ document.getElementById("meter-label").textContent=pct+"%";
+}
+function statsHTML(){var s=state.session,acc=s.seen?Math.round(s.ok/s.seen*100):null;
+ return '<div class="nt-stats"><div class="nt-stat"><b>'+s.streak+'</b><span>Racha</span></div><div class="nt-stat"><b>'+s.best+'</b><span>Mejor</span></div><div class="nt-stat"><b>'+(acc===null?"—":acc+"%")+'</b><span>Aciertos</span></div><div class="nt-stat"><b>'+s.seen+'</b><span>Vistas</span></div></div>';}
+
+function render(){
+ chrome();
+ var main=document.getElementById("main"),c=state.current;
+ if(!c){main.innerHTML="";return;}
+ if(isCards()){
+  var cell;
+  if(state.qDir==="jp_es"){cell='<div class="nt-cell nt-'+state.status+'"><span class="nt-guide-v"></span><span class="nt-guide-h"></span><div class="nt-jp"><span class="nt-kanji" style="font-size:'+heroFont(c.kanji)+'px">'+c.kanji+'</span>'+(c.kanji!==c.kana?'<span class="nt-read">'+c.kana+'</span>':'')+'</div></div>';}
+  else{cell='<div class="nt-cell nt-'+state.status+'"><span class="nt-guide-v"></span><span class="nt-guide-h"></span><span class="nt-prompt">'+c.esPrompt+'</span></div>';}
+  var ans='<div class="nt-answer">';
+  if(state.status==="idle"){ans+='<input id="nt-input" class="nt-input" placeholder="'+(state.qDir==="jp_es"?"en español…":"en rōmaji…")+'" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off"><div class="nt-btns"><button class="nt-primary" id="check">Comprobar</button><button class="nt-ghost" id="dunno">No lo sé</button></div>';}
+  else if(state.status==="right"){ans+='<p class="nt-fb nt-fb-ok">正解 · '+c.kana+' = '+c.es[0]+'</p>';}
+  else{ans+='<div class="nt-fb-wrap"><p class="nt-fb nt-fb-no">'+c.kana+' = <b>'+c.es[0]+'</b> · '+c.romaji+'</p>'+(c.note?'<p class="nt-note">💡 '+c.note+'</p>':'')+'<button class="nt-primary" id="cont">Siguiente</button></div>';}
+  ans+='</div>';
+  main.innerHTML='<div class="nt-drill">'+cell+ans+statsHTML()+'</div>';
+  var chk=document.getElementById("check");if(chk)chk.onclick=checkVocab;
+  var dn=document.getElementById("dunno");if(dn)dn.onclick=revealVocab;
+  var ct=document.getElementById("cont");if(ct)ct.onclick=next;
+  var inp=document.getElementById("nt-input");if(inp){inp.onkeydown=function(e){if(e.key==="Enter"){if(state.status==="idle")checkVocab();}};inp.focus();}
+ } else {
+  var sent='<div class="nt-sentence nt-'+state.status+'"><span>'+c.pre+'</span><span class="nt-blank '+(state.status!=="idle"?"filled":"")+'">'+(state.status==="idle"?"＿":(state.picked||c.ans[0]))+'</span><span>'+c.post+'</span></div><p class="nt-trans">'+c.es+'</p>';
+  var body;
+  if(state.status==="idle"){body='<div class="nt-particles">'+PARTICLE_OPTIONS.map(function(p){return '<button class="nt-pbtn" data-p="'+p+'">'+p+'</button>';}).join("")+'</div>';}
+  else{var head=state.status==="right"?'<p class="nt-fb nt-fb-ok">正解 · '+c.ans.join(" / ")+'</p>':'<p class="nt-fb nt-fb-no">Era <b>'+c.ans.join(" / ")+'</b>'+(state.picked?', no '+state.picked:'')+'</p>';body='<div class="nt-fb-wrap">'+head+'<p class="nt-note">💡 '+c.exp+'</p><button class="nt-primary" id="cont">Siguiente</button></div>';}
+  main.innerHTML='<div class="nt-drill">'+sent+body+statsHTML()+'</div>';
+  main.querySelectorAll(".nt-pbtn").forEach(function(b){b.onclick=function(){chooseParticle(b.getAttribute("data-p"));};});
+  var ct2=document.getElementById("cont");if(ct2)ct2.onclick=next;
+ }
+}
+
+function buildExport(){
+ var lines=["NIHONGO TRAINER — progreso de Genís",""];
+ ORDER.forEach(function(k){var d=DECKS[k],b=state.boxes[k]||{},weak=[],strong=0;
+  d.data.forEach(function(c){var box=b[c.id]?b[c.id].box:0;if(box>=4)strong++;else weak.push(d.type==="cards"?c.kana+"("+c.es[0]+")":c.ans.join("/")+":"+c.es);});
+  lines.push(DECKS[k].label.toUpperCase()+" — dominados "+strong+"/"+d.data.length);
+  lines.push("  Flojos: "+(weak.join(d.type==="cards"?" ":" · ")||"—"));lines.push("");});
+ var s=state.session,acc=s.seen?Math.round(s.ok/s.seen*100):0;
+ lines.push("Sesión actual ("+DECKS[state.mode].label+"): "+s.seen+" vistas · "+acc+"% aciertos · mejor racha "+s.best);
+ return lines.join("\n");
+}
+document.getElementById("export-btn").onclick=function(){
+ var txt=buildExport(),root=document.getElementById("modal-root");
+ root.innerHTML='<div class="nt-modal" id="ov"><div class="nt-modal-box"><h3>Tu progreso</h3><p>Copia esto y pégaselo a Claude.</p><textarea class="nt-export-area" id="exp" readonly></textarea><div class="nt-modal-btns"><button class="nt-primary" id="cp">Copiar</button><button class="nt-ghost" id="cl">Cerrar</button></div></div></div>';
+ document.getElementById("exp").value=txt;document.getElementById("exp").onfocus=function(){this.select();};
+ document.getElementById("cl").onclick=function(){root.innerHTML="";};
+ document.getElementById("ov").onclick=function(e){if(e.target.id==="ov")root.innerHTML="";};
+ document.getElementById("cp").onclick=function(){var b=this;if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){b.textContent="¡Copiado!";setTimeout(function(){b.textContent="Copiar";},1500);}).catch(function(){document.getElementById("exp").select();});}else{document.getElementById("exp").select();b.textContent="¡Copiado!";}};
+};
+document.getElementById("reset-btn").onclick=function(){if(!confirm("¿Borrar TODO el progreso (todas las pestañas)?"))return;state.boxes={vocab:{},particles:{},months:{},days:{},hours:{}};state.session={seen:0,ok:0,streak:0,best:0};try{localStorage.removeItem(KEY);}catch(e){}pickNext();render();};
+
+pickNext();render();
+})();
+</script>
+</body>
+</html>
