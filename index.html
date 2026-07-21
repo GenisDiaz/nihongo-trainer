@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>日本語 · Nihongo Trainer</title>
+  <style>
+    :root {
+      --washi: #f4f1e8;
+      --washi-card: #fbf9f3;
+      --indigo: #26365f;
+      --indigo-soft: #3a4d7a;
+      --ink: #2a2a2a;
+      --line: #d9d3c4;
+      --accent: #b5462f;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      background: var(--washi);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100%;
+      padding: max(24px, env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom));
+    }
+    .jp { font-family: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif; }
+    header {
+      text-align: center;
+      margin: 32px 0 40px;
+    }
+    header .kanji {
+      font-size: clamp(3rem, 14vw, 5rem);
+      color: var(--indigo);
+      letter-spacing: 0.1em;
+      line-height: 1;
+    }
+    header .sub {
+      margin-top: 12px;
+      font-size: 0.95rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--indigo-soft);
+    }
+    main {
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    a.card {
+      display: block;
+      background: var(--washi-card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 24px 26px;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      box-shadow: 0 1px 2px rgba(38,54,95,0.04);
+    }
+    a.card:active { transform: scale(0.985); }
+    @media (hover: hover) {
+      a.card:hover {
+        border-color: var(--indigo-soft);
+        box-shadow: 0 6px 18px rgba(38,54,95,0.10);
+      }
+    }
+    .card .title-jp {
+      font-size: 2rem;
+      color: var(--indigo);
+      line-height: 1;
+    }
+    .card .title-en {
+      margin-top: 8px;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .card .desc {
+      margin-top: 6px;
+      font-size: 0.9rem;
+      color: #6b6558;
+      line-height: 1.45;
+    }
+    .card .arrow {
+      float: right;
+      color: var(--indigo-soft);
+      font-size: 1.4rem;
+      margin-top: 4px;
+    }
+    footer {
+      margin-top: auto;
+      padding-top: 40px;
+      font-size: 0.78rem;
+      color: #9a9384;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="kanji jp">日本語</div>
+    <div class="sub">Nihongo Trainer</div>
+  </header>
+
+  <main>
+    <a class="card" href="kana.html">
+      <span class="arrow">→</span>
+      <div class="title-jp jp">かな</div>
+      <div class="title-en">Kana Trainer</div>
+      <div class="desc">Hiragana y katakana, incluyendo dakuten. Práctica con repetición espaciada.</div>
+    </a>
+
+    <a class="card" href="nihongo.html">
+      <span class="arrow">→</span>
+      <div class="title-jp jp">日本語</div>
+      <div class="title-en">Nihongo Trainer</div>
+      <div class="desc">Pronombres, partículas, meses, días y horas.</div>
+    </a>
+  </main>
+
+  <footer>
+    がんばって · Estudia un poco cada día
+  </footer>
+</body>
+</html>
