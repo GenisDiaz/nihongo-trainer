@@ -269,23 +269,98 @@ var VERBS=[
  {id:"vb28",kana:"あるく",romaji:"aruku",es:["caminar","andar"],esPrompt:"caminar / andar · 歩く",note:"Grupo 1."},
  {id:"vb29",kana:"はしる",romaji:"hashiru",es:["correr"],esPrompt:"correr · 走る",note:"⚠ Parece Grupo 2 pero es Grupo 1."}
 ];
-// para meses/dias/horas/minutos/verbos, el "hero" es la propia lectura
-MONTHS.concat(DAYS,HOURS,MINUTES,VERBS).forEach(function(c){c.kanji=c.kana;});
+var NUMBERS=[
+ {id:"n0",kana:"ゼロ",romaji:"zero",alt:["rei"],es:["0","cero"],esPrompt:"0 · ゼロ",note:"También れい. En teléfonos, まる."},
+ {id:"n1",kana:"いち",romaji:"ichi",es:["1","uno"],esPrompt:"1 · 一",note:""},
+ {id:"n2",kana:"に",romaji:"ni",es:["2","dos"],esPrompt:"2 · 二",note:""},
+ {id:"n3",kana:"さん",romaji:"san",es:["3","tres"],esPrompt:"3 · 三",note:""},
+ {id:"n4",kana:"よん",romaji:"yon",alt:["shi"],es:["4","cuatro"],esPrompt:"4 · 四",note:"よん o し (し se evita: suena a «muerte»)."},
+ {id:"n5",kana:"ご",romaji:"go",es:["5","cinco"],esPrompt:"5 · 五",note:""},
+ {id:"n6",kana:"ろく",romaji:"roku",es:["6","seis"],esPrompt:"6 · 六",note:""},
+ {id:"n7",kana:"なな",romaji:"nana",alt:["shichi"],es:["7","siete"],esPrompt:"7 · 七",note:"なな o しち."},
+ {id:"n8",kana:"はち",romaji:"hachi",es:["8","ocho"],esPrompt:"8 · 八",note:""},
+ {id:"n9",kana:"きゅう",romaji:"kyuu",alt:["kyu","ku"],es:["9","nueve"],esPrompt:"9 · 九",note:"きゅう o く."},
+ {id:"n10",kana:"じゅう",romaji:"juu",alt:["ju"],es:["10","diez"],esPrompt:"10 · 十",note:""},
+ {id:"n11",kana:"じゅういち",romaji:"juuichi",alt:["juichi"],es:["11","once"],esPrompt:"11 · 十一",note:"Patrón: 10 + 1."},
+ {id:"n12",kana:"じゅうに",romaji:"juuni",alt:["juni"],es:["12","doce"],esPrompt:"12 · 十二",note:""},
+ {id:"n13",kana:"じゅうさん",romaji:"juusan",alt:["jusan"],es:["13","trece"],esPrompt:"13 · 十三",note:""},
+ {id:"n14",kana:"じゅうよん",romaji:"juuyon",alt:["juyon","juushi"],es:["14","catorce"],esPrompt:"14 · 十四",note:""},
+ {id:"n15",kana:"じゅうご",romaji:"juugo",alt:["jugo"],es:["15","quince"],esPrompt:"15 · 十五",note:""},
+ {id:"n16",kana:"じゅうろく",romaji:"juuroku",alt:["juroku"],es:["16","dieciseis"],esPrompt:"16 · 十六",note:""},
+ {id:"n17",kana:"じゅうなな",romaji:"juunana",alt:["junana","juushichi"],es:["17","diecisiete"],esPrompt:"17 · 十七",note:""},
+ {id:"n18",kana:"じゅうはち",romaji:"juuhachi",alt:["juhachi"],es:["18","dieciocho"],esPrompt:"18 · 十八",note:""},
+ {id:"n19",kana:"じゅうきゅう",romaji:"juukyuu",alt:["jukyuu","juuku"],es:["19","diecinueve"],esPrompt:"19 · 十九",note:""},
+ {id:"n20",kana:"にじゅう",romaji:"nijuu",alt:["niju"],es:["20","veinte"],esPrompt:"20 · 二十",note:"Decenas: número + じゅう."},
+ {id:"n30",kana:"さんじゅう",romaji:"sanjuu",alt:["sanju"],es:["30","treinta"],esPrompt:"30 · 三十",note:""},
+ {id:"n40",kana:"よんじゅう",romaji:"yonjuu",alt:["yonju"],es:["40","cuarenta"],esPrompt:"40 · 四十",note:"よんじゅう (nunca しじゅう)."},
+ {id:"n50",kana:"ごじゅう",romaji:"gojuu",alt:["goju"],es:["50","cincuenta"],esPrompt:"50 · 五十",note:""},
+ {id:"n60",kana:"ろくじゅう",romaji:"rokujuu",alt:["rokuju"],es:["60","sesenta"],esPrompt:"60 · 六十",note:""},
+ {id:"n70",kana:"ななじゅう",romaji:"nanajuu",alt:["nanaju"],es:["70","setenta"],esPrompt:"70 · 七十",note:"ななじゅう (no しちじゅう)."},
+ {id:"n80",kana:"はちじゅう",romaji:"hachijuu",alt:["hachiju"],es:["80","ochenta"],esPrompt:"80 · 八十",note:""},
+ {id:"n90",kana:"きゅうじゅう",romaji:"kyuujuu",alt:["kyuuju","kyuju"],es:["90","noventa"],esPrompt:"90 · 九十",note:"きゅうじゅう (no くじゅう)."},
+ {id:"n100",kana:"ひゃく",romaji:"hyaku",es:["100","cien"],esPrompt:"100 · 百",note:"Cientos: número + ひゃく (con cambios)."},
+ {id:"n200",kana:"にひゃく",romaji:"nihyaku",es:["200","doscientos"],esPrompt:"200 · 二百",note:""},
+ {id:"n300",kana:"さんびゃく",romaji:"sanbyaku",es:["300","trescientos"],esPrompt:"300 · 三百",note:"⚠ びゃく (no ひゃく)."},
+ {id:"n400",kana:"よんひゃく",romaji:"yonhyaku",es:["400","cuatrocientos"],esPrompt:"400 · 四百",note:""},
+ {id:"n500",kana:"ごひゃく",romaji:"gohyaku",es:["500","quinientos"],esPrompt:"500 · 五百",note:""},
+ {id:"n600",kana:"ろっぴゃく",romaji:"roppyaku",es:["600","seiscientos"],esPrompt:"600 · 六百",note:"⚠ ろっ + ぴゃく."},
+ {id:"n700",kana:"ななひゃく",romaji:"nanahyaku",es:["700","setecientos"],esPrompt:"700 · 七百",note:""},
+ {id:"n800",kana:"はっぴゃく",romaji:"happyaku",es:["800","ochocientos"],esPrompt:"800 · 八百",note:"⚠ はっ + ぴゃく."},
+ {id:"n900",kana:"きゅうひゃく",romaji:"kyuuhyaku",alt:["kyuhyaku"],es:["900","novecientos"],esPrompt:"900 · 九百",note:""},
+ {id:"n1000",kana:"せん",romaji:"sen",es:["1000","mil"],esPrompt:"1000 · 千",note:"Miles: número + せん (con cambios)."},
+ {id:"n2000",kana:"にせん",romaji:"nisen",es:["2000","dos mil"],esPrompt:"2000 · 二千",note:""},
+ {id:"n3000",kana:"さんぜん",romaji:"sanzen",es:["3000","tres mil"],esPrompt:"3000 · 三千",note:"⚠ ぜん (no せん)."},
+ {id:"n4000",kana:"よんせん",romaji:"yonsen",es:["4000","cuatro mil"],esPrompt:"4000 · 四千",note:""},
+ {id:"n5000",kana:"ごせん",romaji:"gosen",es:["5000","cinco mil"],esPrompt:"5000 · 五千",note:""},
+ {id:"n6000",kana:"ろくせん",romaji:"rokusen",es:["6000","seis mil"],esPrompt:"6000 · 六千",note:""},
+ {id:"n7000",kana:"ななせん",romaji:"nanasen",es:["7000","siete mil"],esPrompt:"7000 · 七千",note:""},
+ {id:"n8000",kana:"はっせん",romaji:"hassen",es:["8000","ocho mil"],esPrompt:"8000 · 八千",note:"⚠ はっ + せん."},
+ {id:"n9000",kana:"きゅうせん",romaji:"kyuusen",alt:["kyusen"],es:["9000","nueve mil"],esPrompt:"9000 · 九千",note:""},
+ {id:"n10000",kana:"いちまん",romaji:"ichiman",es:["10000","diez mil"],esPrompt:"10.000 · 一万",note:"⚠ Siempre いちまん (nunca まん solo). 10.000 = la unidad 万."}
+];
+var COUNTERS=[
+ {id:"cp1",kana:"ひとり",romaji:"hitori",es:["1 persona","una persona"],esPrompt:"1 persona · 一人",note:"⚠ Lectura nativa."},
+ {id:"cp2",kana:"ふたり",romaji:"futari",es:["2 personas","dos personas"],esPrompt:"2 personas · 二人",note:"⚠ Lectura nativa."},
+ {id:"cp3",kana:"さんにん",romaji:"sannin",es:["3 personas","tres personas"],esPrompt:"3 personas · 三人",note:"Desde aquí: número + にん."},
+ {id:"cp4",kana:"よにん",romaji:"yonin",es:["4 personas","cuatro personas"],esPrompt:"4 personas · 四人",note:"⚠ よにん (no よんにん ni しにん)."},
+ {id:"cp5",kana:"ごにん",romaji:"gonin",es:["5 personas","cinco personas"],esPrompt:"5 personas · 五人",note:""},
+ {id:"cp6",kana:"ろくにん",romaji:"rokunin",es:["6 personas","seis personas"],esPrompt:"6 personas · 六人",note:""},
+ {id:"cp7",kana:"ななにん",romaji:"nananin",alt:["shichinin"],es:["7 personas","siete personas"],esPrompt:"7 personas · 七人",note:"ななにん o しちにん."},
+ {id:"cp8",kana:"はちにん",romaji:"hachinin",es:["8 personas","ocho personas"],esPrompt:"8 personas · 八人",note:""},
+ {id:"cp9",kana:"きゅうにん",romaji:"kyuunin",alt:["kyunin","kunin"],es:["9 personas","nueve personas"],esPrompt:"9 personas · 九人",note:"きゅうにん o くにん."},
+ {id:"cp10",kana:"じゅうにん",romaji:"juunin",alt:["junin"],es:["10 personas","diez personas"],esPrompt:"10 personas · 十人",note:""},
+ {id:"cpq",kana:"なんにん",romaji:"nannin",es:["cuantas personas","cuanta gente"],esPrompt:"¿cuántas personas? · 何人",note:"何 (なん) «cuánto» + にん."},
+ {id:"ct1",kana:"ひとつ",romaji:"hitotsu",es:["1 cosa","una cosa"],esPrompt:"1 cosa · 一つ",note:"Contador genérico (cosas). Serie nativa."},
+ {id:"ct2",kana:"ふたつ",romaji:"futatsu",es:["2 cosas","dos cosas"],esPrompt:"2 cosas · 二つ",note:""},
+ {id:"ct3",kana:"みっつ",romaji:"mittsu",es:["3 cosas","tres cosas"],esPrompt:"3 cosas · 三つ",note:""},
+ {id:"ct4",kana:"よっつ",romaji:"yottsu",es:["4 cosas","cuatro cosas"],esPrompt:"4 cosas · 四つ",note:""},
+ {id:"ct5",kana:"いつつ",romaji:"itsutsu",es:["5 cosas","cinco cosas"],esPrompt:"5 cosas · 五つ",note:""},
+ {id:"ct6",kana:"むっつ",romaji:"muttsu",es:["6 cosas","seis cosas"],esPrompt:"6 cosas · 六つ",note:""},
+ {id:"ct7",kana:"ななつ",romaji:"nanatsu",es:["7 cosas","siete cosas"],esPrompt:"7 cosas · 七つ",note:""},
+ {id:"ct8",kana:"やっつ",romaji:"yattsu",es:["8 cosas","ocho cosas"],esPrompt:"8 cosas · 八つ",note:""},
+ {id:"ct9",kana:"ここのつ",romaji:"kokonotsu",es:["9 cosas","nueve cosas"],esPrompt:"9 cosas · 九つ",note:""},
+ {id:"ct10",kana:"とお",romaji:"too",alt:["to","tou"],es:["10 cosas","diez cosas"],esPrompt:"10 cosas · 十",note:"⚠ とお, sin つ. De 11 en adelante: じゅう + 個 (こ)."},
+ {id:"ctq",kana:"いくつ",romaji:"ikutsu",es:["cuantos","cuantas cosas"],esPrompt:"¿cuántos? · いくつ",note:"También «¿qué edad?»."}
+];
+// para meses/dias/horas/minutos/verbos/numeros/contadores, el "hero" es la propia lectura
+MONTHS.concat(DAYS,HOURS,MINUTES,VERBS,NUMBERS,COUNTERS).forEach(function(c){c.kanji=c.kana;});
 
 var DECKS={
  vocab:{label:"Pronombres",type:"cards",data:PRONOUNS},
  verbs:{label:"Verbos",type:"cards",data:VERBS},
  particles:{label:"Partículas",type:"particles",data:SENTENCES},
+ numbers:{label:"Números",type:"cards",data:NUMBERS},
+ counters:{label:"Contadores",type:"cards",data:COUNTERS},
  months:{label:"Meses",type:"cards",data:MONTHS},
  days:{label:"Días",type:"cards",data:DAYS},
  hours:{label:"Horas",type:"cards",data:HOURS},
  minutes:{label:"Minutos",type:"cards",data:MINUTES}
 };
-var ORDER=["vocab","verbs","particles","months","days","hours","minutes"];
+var ORDER=["vocab","verbs","particles","numbers","counters","months","days","hours","minutes"];
 var KEY="nihongo-trainer-v1";
 var reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-function load(){try{var r=localStorage.getItem(KEY);var p=r?JSON.parse(r):{};return{vocab:p.vocab||{},verbs:p.verbs||{},particles:p.particles||{},months:p.months||{},days:p.days||{},hours:p.hours||{},minutes:p.minutes||{}};}catch(e){return{vocab:{},verbs:{},particles:{},months:{},days:{},hours:{},minutes:{}};}}
+function load(){try{var r=localStorage.getItem(KEY);var p=r?JSON.parse(r):{};return{vocab:p.vocab||{},verbs:p.verbs||{},particles:p.particles||{},numbers:p.numbers||{},counters:p.counters||{},months:p.months||{},days:p.days||{},hours:p.hours||{},minutes:p.minutes||{}};}catch(e){return{vocab:{},verbs:{},particles:{},numbers:{},counters:{},months:{},days:{},hours:{},minutes:{}};}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state.boxes));}catch(e){}}
 function stripAcc(s){return (s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"");}
 function normEs(s){return stripAcc((s||"").trim().toLowerCase()).replace(/[.!¿?,]/g,"");}
@@ -392,7 +467,7 @@ document.getElementById("export-btn").onclick=function(){
  document.getElementById("ov").onclick=function(e){if(e.target.id==="ov")root.innerHTML="";};
  document.getElementById("cp").onclick=function(){var b=this;if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){b.textContent="¡Copiado!";setTimeout(function(){b.textContent="Copiar";},1500);}).catch(function(){document.getElementById("exp").select();});}else{document.getElementById("exp").select();b.textContent="¡Copiado!";}};
 };
-document.getElementById("reset-btn").onclick=function(){if(!confirm("¿Borrar TODO el progreso (todas las pestañas)?"))return;state.boxes={vocab:{},verbs:{},particles:{},months:{},days:{},hours:{},minutes:{}};state.session={seen:0,ok:0,streak:0,best:0};try{localStorage.removeItem(KEY);}catch(e){}pickNext();render();};
+document.getElementById("reset-btn").onclick=function(){if(!confirm("¿Borrar TODO el progreso (todas las pestañas)?"))return;state.boxes={vocab:{},verbs:{},particles:{},numbers:{},counters:{},months:{},days:{},hours:{},minutes:{}};state.session={seen:0,ok:0,streak:0,best:0};try{localStorage.removeItem(KEY);}catch(e){}pickNext();render();};
 
 pickNext();render();
 })();
