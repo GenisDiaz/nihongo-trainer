@@ -41,8 +41,8 @@ body{font-family:var(--sans);color:var(--sumi);background:var(--paper);
 .nt-cell{position:relative;width:230px;height:180px;background:var(--paper);border:2px solid var(--ai);border-radius:6px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 rgba(31,58,95,.12);transition:.2s;padding:8px;}
 .nt-guide-v{position:absolute;width:1px;height:100%;left:50%;background-image:linear-gradient(180deg,var(--guide) 50%,transparent 0);background-size:1px 8px;}
 .nt-guide-h{position:absolute;height:1px;width:100%;top:50%;background-image:linear-gradient(90deg,var(--guide) 50%,transparent 0);background-size:8px 1px;}
-.nt-jp{display:flex;flex-direction:column;align-items:center;gap:6px;animation:settle .35s ease;text-align:center;}
-.nt-kanji{font-family:var(--mincho);line-height:1.1;color:var(--sumi);}
+.nt-jp{display:flex;flex-direction:column;align-items:center;gap:6px;animation:settle .35s ease;text-align:center;max-width:100%;}
+.nt-kanji{font-family:var(--mincho);line-height:1.15;color:var(--sumi);max-width:100%;overflow-wrap:anywhere;}
 .nt-read{font-family:var(--mincho);font-size:20px;color:var(--sumi-soft);}
 .nt-prompt{font-family:var(--sans);font-size:26px;font-weight:600;color:var(--sumi);text-align:center;padding:0 12px;animation:settle .35s ease;line-height:1.3;}
 @keyframes settle{from{opacity:0;transform:translateY(-6px) scale(.97);}to{opacity:1;transform:none;}}
@@ -216,26 +216,81 @@ var HOURS=[
  {id:"h11",kana:"じゅういちじ",romaji:"juuichiji",alt:["juichiji"],es:["11","las 11","11:00"],esPrompt:"las 11:00 · 11時",note:""},
  {id:"h12",kana:"じゅうにじ",romaji:"juuniji",alt:["juniji"],es:["12","las 12","12:00"],esPrompt:"las 12:00 · 12時",note:""}
 ];
-// para meses/dias/horas, el "hero" es la propia lectura
-MONTHS.concat(DAYS,HOURS).forEach(function(c){c.kanji=c.kana;});
+var MINUTES=[
+ {id:"t1",kana:"いちじごふん",romaji:"ichijigofun",es:["1:05","1:5","la 1:05"],esPrompt:"1:05 · 1時5分",note:""},
+ {id:"t2",kana:"にじじゅっぷん",romaji:"nijijuppun",alt:["nijijippun"],es:["2:10","las 2:10"],esPrompt:"2:10 · 2時10分",note:"⚠ 10分 = じゅっぷん (o じっぷん)."},
+ {id:"t3",kana:"さんじじゅうごふん",romaji:"sanjijuugofun",alt:["sanjijugofun"],es:["3:15","las 3:15"],esPrompt:"3:15 · 3時15分",note:""},
+ {id:"t4",kana:"よじにじゅっぷん",romaji:"yojinijuppun",alt:["yojinijippun"],es:["4:20","las 4:20"],esPrompt:"4:20 · 4時20分",note:"⚠ 4時 = よじ (no よんじ)."},
+ {id:"t5",kana:"ごじさんじゅっぷん",romaji:"gojisanjuppun",alt:["gojisanjippun","gojihan"],es:["5:30","las 5:30","5 y media"],esPrompt:"5:30 · 5時30分",note:"5:30 = さんじゅっぷん, o simplemente ごじはん."},
+ {id:"t6",kana:"ろくじはん",romaji:"rokujihan",es:["6:30","6 y media","las 6 y media"],esPrompt:"6:30 · 6時半",note:"半 (はん) = «y media»."},
+ {id:"t7",kana:"しちじよんじゅっぷん",romaji:"shichijiyonjuppun",alt:["shichijiyonjippun","nanajiyonjuppun"],es:["7:40","las 7:40"],esPrompt:"7:40 · 7時40分",note:""},
+ {id:"t8",kana:"はちじよんじゅうごふん",romaji:"hachijiyonjuugofun",alt:["hachijiyonjugofun"],es:["8:45","las 8:45"],esPrompt:"8:45 · 8時45分",note:""},
+ {id:"t9",kana:"くじごじゅっぷん",romaji:"kujigojuppun",alt:["kujigojippun"],es:["9:50","las 9:50"],esPrompt:"9:50 · 9時50分",note:"⚠ 9時 = くじ (no きゅうじ)."},
+ {id:"t10",kana:"じゅうじごじゅうごふん",romaji:"juujigojuugofun",alt:["jujigojugofun"],es:["10:55","las 10:55"],esPrompt:"10:55 · 10時55分",note:""},
+ {id:"t11",kana:"じゅういちじいっぷん",romaji:"juuichijiippun",alt:["juichijiippun"],es:["11:01","11:1","las 11:01"],esPrompt:"11:01 · 11時1分",note:"⚠ 1分 = いっぷん."},
+ {id:"t12",kana:"じゅうにじさんぷん",romaji:"juunijisanpun",alt:["junijisanpun"],es:["12:03","12:3","las 12:03"],esPrompt:"12:03 · 12時3分",note:"⚠ 3分 = さんぷん."},
+ {id:"t13",kana:"いちじよんぷん",romaji:"ichijiyonpun",es:["1:04","1:4","la 1:04"],esPrompt:"1:04 · 1時4分",note:"⚠ 4分 = よんぷん."},
+ {id:"t14",kana:"にじろっぷん",romaji:"nijiroppun",es:["2:06","2:6","las 2:06"],esPrompt:"2:06 · 2時6分",note:"⚠ 6分 = ろっぷん."},
+ {id:"t15",kana:"さんじはっぷん",romaji:"sanjihappun",alt:["sanjihachifun"],es:["3:08","3:8","las 3:08"],esPrompt:"3:08 · 3時8分",note:"⚠ 8分 = はっぷん."},
+ {id:"t16",kana:"よじきゅうふん",romaji:"yojikyuufun",alt:["yojikyufun"],es:["4:09","4:9","las 4:09"],esPrompt:"4:09 · 4時9分",note:"⚠ 9分 = きゅうふん. Y 4時 = よじ."},
+ {id:"t17",kana:"しちじななふん",romaji:"shichijinanafun",alt:["shichijishichifun"],es:["7:07","7:7","las 7:07"],esPrompt:"7:07 · 7時7分",note:"7分 = ななふん (o しちふん)."},
+ {id:"t18",kana:"はちじはん",romaji:"hachijihan",es:["8:30","8 y media","las 8 y media"],esPrompt:"8:30 · 8時半",note:"半 = «y media»."},
+ {id:"t19",kana:"じゅうじにじゅうごふん",romaji:"juujinijuugofun",alt:["jujinijugofun"],es:["10:25","las 10:25"],esPrompt:"10:25 · 10時25分",note:""},
+ {id:"t20",kana:"じゅうにじはん",romaji:"juunijihan",alt:["junijihan"],es:["12:30","12 y media","las 12 y media"],esPrompt:"12:30 · 12時半",note:"半 = «y media»."}
+];
+var VERBS=[
+ {id:"vb1",kana:"だ",romaji:"da",es:["ser"],esPrompt:"ser (cópula) · だ",note:"Cópula informal de です. Va al final: 学生だ (soy estudiante)."},
+ {id:"vb2",kana:"いる",romaji:"iru",es:["estar","haber"],esPrompt:"estar (personas/animales) · いる",note:"Existencia de seres vivos. Grupo 2 (ichidan)."},
+ {id:"vb3",kana:"ある",romaji:"aru",es:["haber","estar","tener"],esPrompt:"haber / estar (cosas) · ある",note:"Existencia de cosas. ⚠ Negativo irregular: ない."},
+ {id:"vb4",kana:"する",romaji:"suru",es:["hacer"],esPrompt:"hacer · する",note:"⚠ Irregular. Convierte sustantivos en verbos (勉強する)."},
+ {id:"vb5",kana:"くる",romaji:"kuru",es:["venir"],esPrompt:"venir · 来る",note:"⚠ Irregular: きます／きて／こない."},
+ {id:"vb6",kana:"いく",romaji:"iku",es:["ir"],esPrompt:"ir · 行く",note:"Grupo 1. Te-forma irregular: いって."},
+ {id:"vb7",kana:"かえる",romaji:"kaeru",es:["volver","regresar"],esPrompt:"volver (a casa) · 帰る",note:"⚠ Parece Grupo 2 pero es Grupo 1."},
+ {id:"vb8",kana:"たべる",romaji:"taberu",es:["comer"],esPrompt:"comer · 食べる",note:"Grupo 2 (ichidan)."},
+ {id:"vb9",kana:"のむ",romaji:"nomu",es:["beber","tomar"],esPrompt:"beber · 飲む",note:"Grupo 1 (godan)."},
+ {id:"vb10",kana:"みる",romaji:"miru",es:["ver","mirar"],esPrompt:"ver / mirar · 見る",note:"Grupo 2."},
+ {id:"vb11",kana:"きく",romaji:"kiku",es:["escuchar","oir"],esPrompt:"escuchar / oír · 聞く",note:"También «preguntar». Grupo 1."},
+ {id:"vb12",kana:"はなす",romaji:"hanasu",es:["hablar"],esPrompt:"hablar · 話す",note:"Grupo 1."},
+ {id:"vb13",kana:"よむ",romaji:"yomu",es:["leer"],esPrompt:"leer · 読む",note:"Grupo 1."},
+ {id:"vb14",kana:"かく",romaji:"kaku",es:["escribir"],esPrompt:"escribir · 書く",note:"Grupo 1."},
+ {id:"vb15",kana:"かう",romaji:"kau",es:["comprar"],esPrompt:"comprar · 買う",note:"Grupo 1."},
+ {id:"vb16",kana:"あそぶ",romaji:"asobu",es:["jugar","divertirse"],esPrompt:"jugar / divertirse · 遊ぶ",note:"Grupo 1. Para deportes se usa する."},
+ {id:"vb17",kana:"すむ",romaji:"sumu",es:["vivir","residir"],esPrompt:"vivir / residir · 住む",note:"Grupo 1. Se usa con に: 東京に住む."},
+ {id:"vb18",kana:"でる",romaji:"deru",es:["salir"],esPrompt:"salir · 出る",note:"Grupo 2. «Salir (a la calle / con alguien)» = でかける."},
+ {id:"vb19",kana:"はいる",romaji:"hairu",es:["entrar"],esPrompt:"entrar · 入る",note:"⚠ Parece Grupo 2 pero es Grupo 1."},
+ {id:"vb20",kana:"おきる",romaji:"okiru",es:["levantarse","despertarse"],esPrompt:"levantarse · 起きる",note:"Grupo 2."},
+ {id:"vb21",kana:"ねる",romaji:"neru",es:["dormir","acostarse"],esPrompt:"dormir · 寝る",note:"Grupo 2."},
+ {id:"vb22",kana:"まつ",romaji:"matsu",es:["esperar"],esPrompt:"esperar · 待つ",note:"Grupo 1."},
+ {id:"vb23",kana:"わかる",romaji:"wakaru",es:["entender","comprender"],esPrompt:"entender · 分かる",note:"Grupo 1. Lo entendido lleva が."},
+ {id:"vb24",kana:"べんきょうする",romaji:"benkyousuru",alt:["benkyosuru","benkyoosuru"],es:["estudiar"],esPrompt:"estudiar · 勉強する",note:"Sustantivo 勉強 + する."},
+ {id:"vb25",kana:"はたらく",romaji:"hataraku",es:["trabajar"],esPrompt:"trabajar · 働く",note:"Grupo 1."},
+ {id:"vb26",kana:"いう",romaji:"iu",es:["decir"],esPrompt:"decir · 言う",note:"Grupo 1. Se pronuncia «yū»."},
+ {id:"vb27",kana:"つくる",romaji:"tsukuru",es:["crear","fabricar"],esPrompt:"crear / fabricar · 作る",note:"Grupo 1."},
+ {id:"vb28",kana:"あるく",romaji:"aruku",es:["caminar","andar"],esPrompt:"caminar / andar · 歩く",note:"Grupo 1."},
+ {id:"vb29",kana:"はしる",romaji:"hashiru",es:["correr"],esPrompt:"correr · 走る",note:"⚠ Parece Grupo 2 pero es Grupo 1."}
+];
+// para meses/dias/horas/minutos/verbos, el "hero" es la propia lectura
+MONTHS.concat(DAYS,HOURS,MINUTES,VERBS).forEach(function(c){c.kanji=c.kana;});
 
 var DECKS={
  vocab:{label:"Pronombres",type:"cards",data:PRONOUNS},
+ verbs:{label:"Verbos",type:"cards",data:VERBS},
  particles:{label:"Partículas",type:"particles",data:SENTENCES},
  months:{label:"Meses",type:"cards",data:MONTHS},
  days:{label:"Días",type:"cards",data:DAYS},
- hours:{label:"Horas",type:"cards",data:HOURS}
+ hours:{label:"Horas",type:"cards",data:HOURS},
+ minutes:{label:"Minutos",type:"cards",data:MINUTES}
 };
-var ORDER=["vocab","particles","months","days","hours"];
+var ORDER=["vocab","verbs","particles","months","days","hours","minutes"];
 var KEY="nihongo-trainer-v1";
 var reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-function load(){try{var r=localStorage.getItem(KEY);var p=r?JSON.parse(r):{};return{vocab:p.vocab||{},particles:p.particles||{},months:p.months||{},days:p.days||{},hours:p.hours||{}};}catch(e){return{vocab:{},particles:{},months:{},days:{},hours:{}};}}
+function load(){try{var r=localStorage.getItem(KEY);var p=r?JSON.parse(r):{};return{vocab:p.vocab||{},verbs:p.verbs||{},particles:p.particles||{},months:p.months||{},days:p.days||{},hours:p.hours||{},minutes:p.minutes||{}};}catch(e){return{vocab:{},verbs:{},particles:{},months:{},days:{},hours:{},minutes:{}};}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state.boxes));}catch(e){}}
 function stripAcc(s){return (s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"");}
 function normEs(s){return stripAcc((s||"").trim().toLowerCase()).replace(/[.!¿?,]/g,"");}
 function normJp(s){return (s||"").trim().toLowerCase().replace(/\s+/g,"");}
-function heroFont(s){var n=(s||"").length;return n<=2?76:n===3?58:n===4?48:n===5?40:n<=6?34:28;}
+function heroFont(s){var n=(s||"").length;return n<=2?76:n===3?58:n===4?48:n===5?40:n<=6?34:n<=8?28:n<=11?22:18;}
 
 var state={mode:"vocab",dir:"jp_es",boxes:load(),session:{seen:0,ok:0,streak:0,best:0},current:null,qDir:"jp_es",status:"idle",picked:null,last:null};
 
@@ -337,7 +392,7 @@ document.getElementById("export-btn").onclick=function(){
  document.getElementById("ov").onclick=function(e){if(e.target.id==="ov")root.innerHTML="";};
  document.getElementById("cp").onclick=function(){var b=this;if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){b.textContent="¡Copiado!";setTimeout(function(){b.textContent="Copiar";},1500);}).catch(function(){document.getElementById("exp").select();});}else{document.getElementById("exp").select();b.textContent="¡Copiado!";}};
 };
-document.getElementById("reset-btn").onclick=function(){if(!confirm("¿Borrar TODO el progreso (todas las pestañas)?"))return;state.boxes={vocab:{},particles:{},months:{},days:{},hours:{}};state.session={seen:0,ok:0,streak:0,best:0};try{localStorage.removeItem(KEY);}catch(e){}pickNext();render();};
+document.getElementById("reset-btn").onclick=function(){if(!confirm("¿Borrar TODO el progreso (todas las pestañas)?"))return;state.boxes={vocab:{},verbs:{},particles:{},months:{},days:{},hours:{},minutes:{}};state.session={seen:0,ok:0,streak:0,best:0};try{localStorage.removeItem(KEY);}catch(e){}pickNext();render();};
 
 pickNext();render();
 })();
