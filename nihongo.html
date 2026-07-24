@@ -342,13 +342,29 @@ var COUNTERS=[
  {id:"ct10",kana:"とお",romaji:"too",alt:["to","tou"],es:["10 cosas","diez cosas"],esPrompt:"10 cosas · 十",note:"⚠ とお, sin つ. De 11 en adelante: じゅう + 個 (こ)."},
  {id:"ctq",kana:"いくつ",romaji:"ikutsu",es:["cuantos","cuantas cosas"],esPrompt:"¿cuántos? · いくつ",note:"También «¿qué edad?»."}
 ];
-// para meses/dias/horas/minutos/verbos/numeros/contadores, el "hero" es la propia lectura
-MONTHS.concat(DAYS,HOURS,MINUTES,VERBS,NUMBERS,COUNTERS).forEach(function(c){c.kanji=c.kana;});
+var QUESTIONS=[
+ {id:"qw1",kana:"なに",romaji:"nani",es:["que"],esPrompt:"qué (con partícula: 何を／何が) · 何",note:"なに + partícula. «Con conector»: 何を, 何が."},
+ {id:"qw2",kana:"なん",romaji:"nan",es:["que"],esPrompt:"qué (pegado: 何です／何時／何人) · 何",note:"なん antes de です y contadores. «Sin conector»."},
+ {id:"qw3",kana:"だれ",romaji:"dare",es:["quien","quienes"],esPrompt:"quién · 誰",note:"Versión educada: どなた."},
+ {id:"qw4",kana:"どこ",romaji:"doko",es:["donde"],esPrompt:"dónde · どこ",note:"Educado: どちら."},
+ {id:"qw5",kana:"いつ",romaji:"itsu",es:["cuando"],esPrompt:"cuándo · いつ",note:"No lleva partícula に: いつ来ますか."},
+ {id:"qw6",kana:"いくつ",romaji:"ikutsu",es:["cuantos","cuantas cosas"],esPrompt:"cuántos (cantidad) · いくつ",note:"También «¿qué edad?». Contador genérico."},
+ {id:"qw7",kana:"いくら",romaji:"ikura",es:["cuanto cuesta","cuanto","cuanto vale"],esPrompt:"cuánto cuesta (precio) · いくら",note:"いくらですか = ¿cuánto cuesta?"},
+ {id:"qw8",kana:"どれ",romaji:"dore",es:["cual","cuales"],esPrompt:"¿cuál? (entre varios, va solo) · どれ",note:"Sin sustantivo detrás: どれですか."},
+ {id:"qw9",kana:"どの",romaji:"dono",es:["cual","que"],esPrompt:"qué / cuál + sustantivo (どの本) · どの",note:"Siempre con sustantivo: どの本 = qué libro."},
+ {id:"qw10",kana:"どんな",romaji:"donna",es:["que tipo de","que clase de","como es"],esPrompt:"qué tipo de · どんな",note:"どんな人 = qué tipo de persona."},
+ {id:"qw11",kana:"どうして",romaji:"doushite",alt:["doushte"],es:["por que","porque"],esPrompt:"por qué (neutral) · どうして",note:"Neutral/educado. Pide la razón."},
+ {id:"qw12",kana:"なんで",romaji:"nande",es:["por que","porque"],esPrompt:"por qué (coloquial) · 何で",note:"Informal, hablado. (Ojo: 何で también «¿con qué?».)"},
+ {id:"qw13",kana:"どうやって",romaji:"douyatte",alt:["douyatte"],es:["como","de que manera"],esPrompt:"cómo (de qué manera) · どうやって",note:"Método/medio: どうやって行きますか = ¿cómo se va?"}
+];
+// para meses/dias/horas/minutos/verbos/numeros/contadores/preguntas, el "hero" es la propia lectura
+MONTHS.concat(DAYS,HOURS,MINUTES,VERBS,NUMBERS,COUNTERS,QUESTIONS).forEach(function(c){c.kanji=c.kana;});
 
 var DECKS={
  vocab:{label:"Pronombres",type:"cards",data:PRONOUNS},
  verbs:{label:"Verbos",type:"cards",data:VERBS},
  particles:{label:"Partículas",type:"particles",data:SENTENCES},
+ questions:{label:"Preguntas",type:"cards",data:QUESTIONS},
  numbers:{label:"Números",type:"cards",data:NUMBERS},
  counters:{label:"Contadores",type:"cards",data:COUNTERS},
  months:{label:"Meses",type:"cards",data:MONTHS},
@@ -356,11 +372,11 @@ var DECKS={
  hours:{label:"Horas",type:"cards",data:HOURS},
  minutes:{label:"Minutos",type:"cards",data:MINUTES}
 };
-var ORDER=["vocab","verbs","particles","numbers","counters","months","days","hours","minutes"];
+var ORDER=["vocab","verbs","particles","questions","numbers","counters","months","days","hours","minutes"];
 var KEY="nihongo-trainer-v1";
 var reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-function load(){try{var r=localStorage.getItem(KEY);var p=r?JSON.parse(r):{};return{vocab:p.vocab||{},verbs:p.verbs||{},particles:p.particles||{},numbers:p.numbers||{},counters:p.counters||{},months:p.months||{},days:p.days||{},hours:p.hours||{},minutes:p.minutes||{}};}catch(e){return{vocab:{},verbs:{},particles:{},numbers:{},counters:{},months:{},days:{},hours:{},minutes:{}};}}
+function load(){try{var r=localStorage.getItem(KEY);var p=r?JSON.parse(r):{};return{vocab:p.vocab||{},verbs:p.verbs||{},particles:p.particles||{},questions:p.questions||{},numbers:p.numbers||{},counters:p.counters||{},months:p.months||{},days:p.days||{},hours:p.hours||{},minutes:p.minutes||{}};}catch(e){return{vocab:{},verbs:{},particles:{},questions:{},numbers:{},counters:{},months:{},days:{},hours:{},minutes:{}};}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state.boxes));}catch(e){}}
 function stripAcc(s){return (s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"");}
 function normEs(s){return stripAcc((s||"").trim().toLowerCase()).replace(/[.!¿?,]/g,"");}
@@ -467,7 +483,7 @@ document.getElementById("export-btn").onclick=function(){
  document.getElementById("ov").onclick=function(e){if(e.target.id==="ov")root.innerHTML="";};
  document.getElementById("cp").onclick=function(){var b=this;if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){b.textContent="¡Copiado!";setTimeout(function(){b.textContent="Copiar";},1500);}).catch(function(){document.getElementById("exp").select();});}else{document.getElementById("exp").select();b.textContent="¡Copiado!";}};
 };
-document.getElementById("reset-btn").onclick=function(){if(!confirm("¿Borrar TODO el progreso (todas las pestañas)?"))return;state.boxes={vocab:{},verbs:{},particles:{},numbers:{},counters:{},months:{},days:{},hours:{},minutes:{}};state.session={seen:0,ok:0,streak:0,best:0};try{localStorage.removeItem(KEY);}catch(e){}pickNext();render();};
+document.getElementById("reset-btn").onclick=function(){if(!confirm("¿Borrar TODO el progreso (todas las pestañas)?"))return;state.boxes={vocab:{},verbs:{},particles:{},questions:{},numbers:{},counters:{},months:{},days:{},hours:{},minutes:{}};state.session={seen:0,ok:0,streak:0,best:0};try{localStorage.removeItem(KEY);}catch(e){}pickNext();render();};
 
 pickNext();render();
 })();
